@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自分のリスク許容度を確認する</title>
+<style>
+  :root{
+    --bg:#f7f5f0; --card:#ffffff; --ink:#2a2620; --sub:#7a7266;
+    --line:#e2dcd0; --accent:#8a1f2b; --accent2:#1b2a4a;
+    --inputbg:#fbf6ec; --derive:#0f6e56;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#211f1a; --card:#2b2924; --ink:#ece8de; --sub:#b0a898;
+      --line:#403c33; --accent:#e08a94; --accent2:#8fb0e0; --inputbg:#35301f; --derive:#74dcb6;}
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;padding:24px 16px;}
+  .wrap{max-width:760px;margin:0 auto;background:var(--card);border-radius:14px;
+    padding:30px 30px 22px;box-shadow:0 2px 30px rgba(0,0,0,.06);border:1px solid var(--line);}
+  .kicker{font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700;margin:0 0 4px;}
+  h1{font-family:"Hiragino Mincho ProN",serif;font-size:25px;font-weight:600;margin:0 0 4px;letter-spacing:.01em;}
+  .lead{font-size:13px;color:var(--sub);margin:0 0 22px;}
+  .row{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin:18px 0;font-size:15px;}
+  .lbl{font-size:14px;}
+  .op{font-size:20px;color:var(--sub);font-weight:400;padding:0 2px;}
+  .unit{font-size:14px;color:var(--sub);}
+  .box{position:relative;display:inline-flex;align-items:center;justify-content:center;
+    min-width:92px;height:46px;border-radius:8px;border:1.6px solid var(--line);
+    background:var(--card);font-size:19px;font-weight:600;padding:0 6px;}
+  .box .tag{position:absolute;top:-9px;left:6px;font-size:9px;color:var(--sub);
+    background:var(--card);padding:0 3px;letter-spacing:.05em;white-space:nowrap;}
+  .box.input{border-color:var(--accent2);background:var(--inputbg);}
+  .box.input input{width:100%;border:none;background:transparent;text-align:center;
+    font-size:19px;font-weight:600;color:var(--accent2);font-family:inherit;outline:none;-moz-appearance:textfield;}
+  .box.input input::-webkit-outer-spin-button,.box.input input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .box.derive{border-style:dashed;border-color:var(--derive);color:var(--derive);background:transparent;}
+  .box.goal{border-color:var(--accent);color:var(--accent);}
+  .note{font-size:12px;color:var(--sub);margin:2px 0 0;flex-basis:100%;}
+  .sep{height:1px;background:var(--line);margin:22px 0;border:0;}
+  .result{margin-top:22px;padding:18px 20px;border-radius:12px;
+    background:linear-gradient(135deg,rgba(138,31,43,.07),rgba(27,42,74,.06));
+    border:1px solid var(--line);display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .result .rl{font-size:14px;color:var(--ink);flex:1;min-width:180px;}
+  .result .rv{font-size:38px;font-weight:700;color:var(--accent);font-family:"Hiragino Mincho ProN",serif;}
+  .result .rv small{font-size:18px;font-weight:600;}
+  .explain{font-size:12.5px;color:var(--sub);line-height:1.75;margin-top:18px;border-top:1px solid var(--line);padding-top:14px;}
+  .explain b{color:var(--ink);}
+  .src{font-size:11px;color:var(--sub);margin-top:14px;padding-top:10px;border-top:1px dashed var(--line);}
+  .fnote{font-size:11px;color:var(--sub);margin-top:4px;}
+  .warn{color:var(--accent);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">リスクから考える</p>
+  <h1>自分のリスク許容度を確認してみましょう</h1>
+  <p class="lead">青い枠（L・M・N）を書き換えると、緑・臙脂の枠が自動で計算されます。金額は万円。</p>
+
+  <!-- 1) 前提 -->
+  <div class="row">
+    <span class="lbl">金融資産</span>
+    <span class="box input"><span class="tag">L</span><input id="L" type="number" step="10" value="1000"></span>
+    <span class="lbl">万円のうち</span>
+    <span class="box input"><span class="tag">M</span><input id="M" type="number" step="10" value="500"></span>
+    <span class="lbl">万円を運用したとする。1年後、</span>
+  </div>
+
+  <!-- 2) 耐えられない水準 -->
+  <div class="row">
+    <span class="lbl">運用部分が</span>
+    <span class="box input"><span class="tag">N</span><input id="N" type="number" step="10" value="350"></span>
+    <span class="lbl">万円まで下落して、そのお金が必要になったら困る。</span>
+  </div>
+
+  <hr class="sep">
+
+  <!-- 3) 限界損失率 -->
+  <div class="row">
+    <span class="lbl">許容できる限界損失率　P ＝（N÷M−1）×100 ＝</span>
+    <span class="box goal"><span class="tag">P</span><span id="P">-30</span></span>
+    <span class="unit">％</span>
+    <span class="note">例：（350÷500−1）×100 ＝ −30％。極端な下落局面を想定した「これ以上は耐えられない」損失率。</span>
+  </div>
+
+  <!-- 4) リスク値 -->
+  <div class="row">
+    <span class="box goal"><span class="tag">P</span><span id="P2">-30</span></span>
+    <span class="unit">％</span>
+    <span class="op">÷ −3 ＝</span>
+    <span class="box goal"><span class="tag">Q</span><span id="Q">10</span></span>
+    <span class="unit">％</span>
+    <span class="lbl">⇒ 許容できるリスク値の目安</span>
+  </div>
+
+  <div class="result">
+    <div class="rl">あなたが取ってよい<br><b>「許容できるリスク値」の目安</b></div>
+    <div class="rv">±<span id="Qr">10</span><small>％</small></div>
+  </div>
+
+  <div class="explain">
+    <b>考え方</b>：運用額 M が、これ以上は耐えられない金額 N まで下がったときの損失率が、限界損失率 P＝(N÷M−1)×100 です。これは滅多に起きない極端な下落を思い描いた数字なので、その「極端さ」をならすために −3 で割り、日常的な変動の幅（標準偏差＝リスク）に近い値 Q に直します。<br>
+    <span class="fnote">※ −3 で割るのは、極端な下落が平常時のブレ（1σ）のおよそ3倍にあたる、という考え方によります。つまり「極端な年に −30％まで耐えられる」なら、平常時のリスク（1σ）は ±10％程度まで取れる、という目安です。前に作った配分ツールの『暴落でどこまで耐えられるか』とちょうど対応します。簡易化のため税金等の費用は考慮していません。</span>
+  </div>
+
+  <div class="src">出典：ピクテ・ジャパン株式会社「投資の基本をプロから学ぶ（BASE）」セミナー資料の計算をもとに作成。個人利用目的。数値は前提により変わり、投資判断の根拠となるものではありません。</div>
+</div>
+
+<script>
+  const $=id=>document.getElementById(id);
+  const fmt=(x,d)=>{ if(!isFinite(x)) return "—"; return Number(x.toFixed(d)).toString(); };
+  function calc(){
+    const M=parseFloat($('M').value)||0, N=parseFloat($('N').value)||0;
+    const P = M>0 ? (N/M - 1)*100 : NaN;
+    const Q = P/-3;
+    $('P').textContent=fmt(P,1); $('P2').textContent=fmt(P,1);
+    $('Q').textContent=fmt(Q,1); $('Qr').textContent=fmt(Math.abs(Q),1);
+  }
+  ['L','M','N'].forEach(id=>$(id).addEventListener('input',calc));
+  calc();
+</script>
+</body>
+</html>
